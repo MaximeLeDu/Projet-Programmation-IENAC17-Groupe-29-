@@ -51,4 +51,6 @@ def save_state(name,agent) :
     for i in range(len(agent.id_states)):
         key = agent.id_states[i]
         Fichier.write(key + ' ' + str(agent.limites[key][0]) + ' ' + str(agent.limites[key][1]) + ' ' + str(i) + '\n')
+    for i in range(len(agent.actions)):
+        Fichier.write(str(agent.actions[i]) +'\n')
     Fichier.close()

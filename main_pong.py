@@ -25,30 +25,43 @@ except IndexError:
 
 class Agent():
     def __init__(self, actions, states,fichier_reward,fichier_state):
-        self.actions = actions
+        self.actions = []
         self.last_action = None
         self.last_state = None
         self.limites = {}
         self.id_states = {}
+        self.id_actions = {}
 		
         try:
             self.rewards = matrice_coordonnées.uni_to_multi ( matrice_coordonnées.fichier_to_uni (fichier_reward))
             with open(fichier_state) as fichier:
                 for line in fichier:
                     words=line.strip().split()
-                    self.limites[words[0]] = [ float(words[1]), float(words[2])]
-                    self.id_states[int(words[3])] = words[0]
-            if self.limites == {}:
+                    if len(words)==4:
+                        self.limites[words[0]] = [ float(words[1]), float(words[2])]
+                        self.id_states[int(words[3])] = words[0]
+                    else:
+                        if words[0] == 'None':
+                            self.actions.append(None)
+                        else:
+                            self.actions.append(int(words[0]))
+                        
+            if self.limites == {} or self.id_actions == []:
                 raise AttributeError
+                
             print("Les fichiers ont pu être lus")
+            
         except Exception as error:
+        
             print("Les fichiers n'ont pas pu être lus")
             print(error)
+            
             shape=()
             for i in states:
                 shape+= (DISCRETIZATION+1,)
             shape+=(len(actions),)
             self.rewards=np.zeros(shape)
+            self.actions = actions
 			
             i=0
 			
@@ -56,9 +69,15 @@ class Agent():
                 self.limites[key] = [0,0]
                 self.id_states[i] = key
                 i+=1
+                
+            i=0
+            
+            for action in actions:
+                self.id_actions[i] = action
 			    
 			    
     def limite_defineur(self,state):
+    
         for key in state.keys():
             if state[key]>self.limites[key][1]:
                 self.limites[key][1] = state[key]
@@ -66,7 +85,9 @@ class Agent():
             if state[key]<self.limites[key][0]:
                 self.limites[key][0] = state[key]
             
+            
     def random(self):
+    
         action = np.random.randint(0, len(self.actions))
         return self.actions[action]
                 
@@ -95,20 +116,26 @@ class Agent():
         self.last_action = action
         return self.actions[action]
 		
+		
     def AI(self,reward,state):
 		
         matrix=self.rewards[state]
+        print('shape matrix : ', matrix.shape)
+        print('reward.shape : ', self.rewards.shape)
+        print('state : ', state)
         action = np.random.choice([action for action, value in enumerate(matrix) if value == np.max(matrix)])
         return self.actions[action]
 		
+		
     def discretize(self,states):
+    
         self.limite_defineur(states)
-        discretized_state=[]
+        discretized_state=()
         for i in range(len(states)):
             key = self.id_states[i]
             key_range = self.limites[key][1] - self.limites[key][0]
             key_discretized = int(DISCRETIZATION*(state[key]-self.limites[key][0])/key_range)
-            discretized_state.append(key_discretized)
+            discretized_state+=(key_discretized,)
         return discretized_state
             
 
