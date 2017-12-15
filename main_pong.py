@@ -19,31 +19,31 @@ except IndexError:
 	RANDOM_PARADIGM=0.6
 	ALPHA = 0.6
 	GAMMA = 0.2
-	TRAINING = 0
-	LENGTH = 50000
+	TRAINING = 1
+	LENGTH = 500
 	
 
 class Agent():
-    def __init__(self, actions, states,nom_fichier):
+    def __init__(self, actions, states,fichier_reward,fichier_state):
         self.actions = actions
-        self.last_action = 0
+        self.last_action = None
         self.last_state = None
         self.limites = {}
         self.id_states = {}
 		
         try:
-            self.rewards = matrice_coordonnées.uni_to_multi ( matrice_coordonnées.fichier_to_uni (nom_fichier),states)
-            with open(nom_fichier) as fichier:
+            self.rewards = matrice_coordonnées.uni_to_multi ( matrice_coordonnées.fichier_to_uni (fichier_reward))
+            with open(fichier_state) as fichier:
                 for line in fichier:
-                    try:
-                        words=line.strip().split()
-                        self.limites[words[0]] = [ int(words[1]), int(words[2])]
-                        self.id_states[words[3]] = words[0]
-                    except:
-                        pass
-            print("Le fichier a pu être lu")
-        except:
-            print("Le fichier n'a pas pu être lu")
+                    words=line.strip().split()
+                    self.limites[words[0]] = [ float(words[1]), float(words[2])]
+                    self.id_states[int(words[3])] = words[0]
+            if self.limites == {}:
+                raise AttributeError
+            print("Les fichiers ont pu être lus")
+        except Exception as error:
+            print("Les fichiers n'ont pas pu être lus")
+            print(error)
             shape=()
             for i in states:
                 shape+= (DISCRETIZATION+1,)
@@ -61,15 +61,19 @@ class Agent():
     def limite_defineur(self,state):
         for key in state.keys():
             if state[key]>self.limites[key][1]:
-                self.limites[key][1] == state[key]
+                self.limites[key][1] = state[key]
             
             if state[key]<self.limites[key][0]:
-                self.limites[key][0] == state[key]
+                self.limites[key][0] = state[key]
+            
+    def random(self):
+        action = np.random.randint(0, len(self.actions))
+        return self.actions[action]
                 
     
     def training(self, reward, state):
 
-        if self.last_action!=0:
+        if self.last_action!=None:
             choix = random()
 
 			#AI paradigm of choice
@@ -98,17 +102,13 @@ class Agent():
         return self.actions[action]
 		
     def discretize(self,states):
+        self.limite_defineur(states)
         discretized_state=[]
         for i in range(len(states)):
             key = self.id_states[i]
-            if state[key] > self.limites[key][1]:
-                discretized_state.append(DISCRETIZATION)
-            elif state[key] < self.limites[key][0]:
-                discretized_state.append(0)
-            else:
-                key_range = self.limites[key][1] - self.limites[key][0]
-                key_discretized = int(DISCRETIZATION*(state[key]-self.limites[key][0])/key_range)
-                discretized_state.append(key_discretized)
+            key_range = self.limites[key][1] - self.limites[key][0]
+            key_discretized = int(DISCRETIZATION*(state[key]-self.limites[key][0])/key_range)
+            discretized_state.append(key_discretized)
         return discretized_state
             
 
@@ -136,8 +136,7 @@ p = PLE(game, fps=fps, frame_skip=frame_skip, num_steps=num_steps,
 
 
 
-agent = Agent(p.getActionSet(),game.getGameState(),"ple/pong_rewards.txt")
-
+agent = Agent(p.getActionSet(),game.getGameState(),"ple/pong_rewards.txt","ple/pong_states.txt")
 # start our training loop
 for f in range(nb_frames):
     # if the game is over
@@ -147,15 +146,14 @@ for f in range(nb_frames):
     state = game.getGameState()
     if TRAINING == 1 :
     	agent.limite_defineur(state)
+    	action = agent.random()
+    elif TRAINING == 0:
+        action = agent.training(reward, agent.discretize(state))
     else:
-        
-        if TRAINING == 0:
-            action = agent.training(reward, agent.discretize(state))
-        else:
-    	    action = agent.AI(reward,agent.discretize(state))
-        reward = p.act(action)
-    if f%100 ==0 :
+    	action = agent.AI(reward,agent.discretize(state))
+    reward = p.act(action)
+    if f%10000 ==0 :
     	print(f)
 
-matrice_coordonnées.uni_to_fichier( matrice_coordonnées.multi_to_uni(agent.rewards),agent,"ple/Pong_reward.txt")
-
+matrice_coordonnées.uni_to_fichier( matrice_coordonnées.multi_to_uni(agent.rewards),"ple/pong_rewards.txt")
+matrice_coordonnées.save_state("ple/pong_states.txt",agent)

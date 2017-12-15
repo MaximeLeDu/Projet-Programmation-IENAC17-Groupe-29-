@@ -35,18 +35,20 @@ def uni_to_multi (Qsa_uni) :
         Qsa[tuple(coord)]=Qsa_uni[i]
     return Qsa
 
-def uni_to_fichier (Qsa_uni,agent,name) :
+def uni_to_fichier (Qsa_uni,name) :
     Fichier = open(name,'w')
-    for i in range(len(agent.id_states)):
-        key = agent.id_states[i]
-        Fichier.write(key + ' ' + agent.limites[key][0] + ' ' + agent.limites[key][1] + ' ' + str(i))
     Fichier.write(str(Qsa_uni))
     Fichier.close()
 
-def fichier_to_uni(name,states):
+def fichier_to_uni(name):
     Fichier = open(name,'r')
-    for i in range(len(states)):
-        Fichier.readline()
     Qsa_uni = eval(Fichier.read())
     Fichier.close()
     return (Qsa_uni)
+    
+def save_state(name,agent) :
+    Fichier = open(name,'w')
+    for i in range(len(agent.id_states)):
+        key = agent.id_states[i]
+        Fichier.write(key + ' ' + str(agent.limites[key][0]) + ' ' + str(agent.limites[key][1]) + ' ' + str(i) + '\n')
+    Fichier.close()
