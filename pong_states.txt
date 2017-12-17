@@ -1,10 +1,10 @@
-player_velocity -1.4075591046552878 1.406387988333344 0
-ball_velocity_x -37.8 36.0 1
-ball_velocity_y -36.0 35.64046001730333 2
-ball_x 0.0 63.96 3
-player_y 0.0 44.5 4
-cpu_y 0.0 44.74 5
-ball_y 0.0 46.99999975956441 6
+cpu_y 0.0 44.74
+ball_y 0.0 46.99999974559005
+ball_velocity_y -36.0 35.64046001730333
+player_velocity -3.1664683471169393 3.6254815296929865
+ball_x 0.0 63.96
+player_y 0.0 44.5
+ball_velocity_x -37.8 36.0
 119
 115
 None
