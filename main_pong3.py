@@ -67,7 +67,7 @@ class Agent():
 			
             for key in states.keys():
                 self.limites[key] = [0,0]
-                self.id_states[i] = key
+                self.id_states.append(key)
                 i+=1
                 
             i=0
