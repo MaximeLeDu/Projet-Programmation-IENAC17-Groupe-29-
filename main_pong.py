@@ -17,8 +17,8 @@ try:
 except IndexError:
 	DISCRETIZATION=10
 	RANDOM_PARADIGM=0.6
-	ALPHA = 0.6
-	GAMMA = 0.2
+	ALPHA = 0.1
+	GAMMA = 0.9
 	TRAINING = "limits"
 	LENGTH = 500
 	
@@ -105,9 +105,10 @@ class Agent():
 
             else:
                 action = np.random.randint(0, len(self.actions))
-            self.rewards[self.last_state + (self.last_action,)]+=ALPHA*(reward + GAMMA*self.rewards[state+(action,)] - self.rewards[self.last_state + (self.last_action,)])
+            self.rewards[self.last_state + (self.last_action,)]+=ALPHA*(reward + GAMMA*np.max(self.rewards[state]) - self.rewards[self.last_state + (self.last_action,)])
+            print("self.rewards[ ", self.last_state + (self.last_action,), " ] = ", self.rewards[self.last_state + (self.last_action,)])
 			
-		#Initialization
+		#Initialization 
         else:
             action = np.random.randint(0, len(self.actions))
 			
@@ -168,7 +169,7 @@ agent = Agent(p.getActionSet(),game.getGameState(),"ple/pong_rewards.txt","ple/p
 for f in range(nb_frames):
     # if the game is over
     if p.game_over():
-        p.reset_game()-Vous avez raison, je vais aller lui mettre une balle dans la tête 
+        p.reset_game()
 
     state = game.getGameState()
     if TRAINING == "limits" :
