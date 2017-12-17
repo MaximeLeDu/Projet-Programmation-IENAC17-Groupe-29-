@@ -37,7 +37,7 @@ def multi_to_uni_no_zeros (Qsa) :
     pourcent=0
     for i in range (tot-1) :
         if int(i/tot*100) ==pourcent+5 :
-        pourcent = int(i/tot*100)
+            pourcent = int(i/tot*100)
             print(pourcent,' sauvegarde\n')
         value = Qsa[tuple(coord)]
         if value != 0.0 :
@@ -88,7 +88,7 @@ def save_state(name,agent) :
     Fichier = open(name,'w')
     for i in range(len(agent.id_states)):
         key = agent.id_states[i]
-        Fichier.write(key + ' ' + str(agent.limites[key][0]) + ' ' + str(agent.limites[key][1]) + ' ' + str(i) + '\n')
+        Fichier.write(key + ' ' + str(agent.limites[key][0]) + ' ' + str(agent.limites[key][1]) + '\n')
     for i in range(len(agent.actions)):
         Fichier.write(str(agent.actions[i]) +'\n')
     Fichier.close()
