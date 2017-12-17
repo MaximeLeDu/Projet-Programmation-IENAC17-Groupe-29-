@@ -36,7 +36,8 @@ def multi_to_uni_no_zeros (Qsa) :
     print(tot)
     pourcent=0
     for i in range (tot-1) :
-        if 5*int(i/tot*100) !=pourcent :
+        if int(i/tot*100) ==pourcent+5 :
+        pourcent = int(i/tot*100)
             print(pourcent,' sauvegarde\n')
         value = Qsa[tuple(coord)]
         if value != 0.0 :
