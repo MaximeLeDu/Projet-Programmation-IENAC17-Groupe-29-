@@ -29,7 +29,7 @@ class Agent():
         self.last_action = None
         self.last_state = None
         self.limites = {}
-        self.id_states = {}
+        self.id_states = []
 		
         try:
             self.rewards = save_files.uni_to_multi_no_zeros ( save_files.fichier_to_uni (fichier_reward))
@@ -37,9 +37,9 @@ class Agent():
             with open(fichier_state) as fichier:
                 for line in fichier:
                     words=line.strip().split()
-                    if len(words)==4:
+                    if len(words)==3:
                         self.limites[words[0]] = [ float(words[1]), float(words[2])]
-                        self.id_states[int(words[3])] = words[0]
+                        self.id_states.append(word[0])
                     else:
                         if words[0] == 'None':
                             self.actions.append(None)
