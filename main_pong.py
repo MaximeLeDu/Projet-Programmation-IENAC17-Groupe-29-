@@ -11,7 +11,7 @@ try:
 	RANDOM_PARADIGM = float(sys.argv[2])
 	ALPHA = float(sys.argv[3])
 	GAMMA = float(sys.argv[4])
-	TRAINING = int(sys.argv[5])
+	TRAINING = sys.argv[5]
 	LENGTH = int(sys.argv[6])
 
 except IndexError:
@@ -19,7 +19,7 @@ except IndexError:
 	RANDOM_PARADIGM=0.6
 	ALPHA = 0.6
 	GAMMA = 0.2
-	TRAINING = 1
+	TRAINING = "limits"
 	LENGTH = 500
 	
 
@@ -144,7 +144,7 @@ game=Pong()
 frame_skip = 2
 num_steps = 1
 
-if TRAINING == 2:
+if TRAINING == "play":
     force_fps = False  # slower speed
     display_screen = True
     fps = 30
@@ -168,13 +168,13 @@ agent = Agent(p.getActionSet(),game.getGameState(),"ple/pong_rewards.txt","ple/p
 for f in range(nb_frames):
     # if the game is over
     if p.game_over():
-        p.reset_game()
+        p.reset_game()-Vous avez raison, je vais aller lui mettre une balle dans la tête 
 
     state = game.getGameState()
-    if TRAINING == 1 :
+    if TRAINING == "limits" :
     	agent.limite_defineur(state)
     	action = agent.random()
-    elif TRAINING == 0:
+    elif TRAINING == "training":
         action = agent.training(reward, agent.discretize(state))
     else:
     	action = agent.AI(reward,agent.discretize(state))
