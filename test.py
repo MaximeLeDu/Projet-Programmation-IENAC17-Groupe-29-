@@ -7,9 +7,17 @@ import agent as ag
 from random import random
 from ple import PLE
 
+def choose_game(path) :
+    game_list = []
+    for game in os.listdir(path) :
+        if game [:2] != "__" and (game [-2:] == "py" or 'assets' in os.listdir(path+'/'+ game))  :
+            game_list.append(game[:-3] if game [-2:] == "py" else game)
+
+                    
+    return game_list
 
 # Choix du jeu
-game_list = [game[:-3] for game in os.listdir("./ple/games") if game [-2:] == "py" and game [:2] != "__"]
+game_list = choose_game("ple/games")
 print (game_list)
 game_name = input("Choisissez un jeu parmis la liste. \n")
 while game_name not in game_list :
@@ -34,21 +42,32 @@ while not valide_name :
         
 # Nom des dossier et des fichiers liés au jeu
 DOSSIER = game_name + "_texts"
+FICHIER_REWARD = DOSSIER + "/" + game_name + "_rewards.p"
+FICHIER_STATE = DOSSIER + "/" + game_name + "_states.txt"
+
+temp_state = []
 try :
     os.mkdir(DOSSIER) 
 except FileExistsError :
     print ("Le dossier de ce jeu existe déjà")
-FICHIER_REWARD = DOSSIER + "/" + game_name + "_rewards.p"
-FICHIER_STATE = DOSSIER + "/" + game_name + "_states.txt"
+    with open(FICHIER_STATE) as fichier:
+        for line in fichier:
+            words=line.strip().split()
+            if len(words)==3 :
+                temp_state.append(words[0])
+    print("Le jeu a été entraîné avec les états suivants : ", temp_state)
+    if input("Continuer avec ces états ? (y/n)") == "n" :
+        temp_state = []
 print(DOSSIER,FICHIER_REWARD,FICHIER_STATE)
 
 p = PLE(game)
 
 # Choix des états utiles
-STATES_CHOSEN = []
-for key in list(game.getGameState().keys()) :
-    if input ("Prendre en compte " + key + " ? (y/n) \n") == 'y' :
-        STATES_CHOSEN.append(key)
+STATES_CHOSEN = temp_state
+if STATES_CHOSEN == [] :
+    for key in list(game.getGameState().keys()) :
+        if input ("Prendre en compte " + key + " ? (y/n) \n") == 'y' :
+            STATES_CHOSEN.append(key)
 print (STATES_CHOSEN)
 print (p.getActionSet())
 
