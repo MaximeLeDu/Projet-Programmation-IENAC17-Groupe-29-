@@ -42,7 +42,6 @@ print (game_name + " importé")
 
 
 
-
 valide_name = False
 while not valide_name :   
     # création du jeu et du PLE
@@ -61,7 +60,7 @@ FICHIER_STATE = DOSSIER + "/" + game_name + "_states.txt"
 # création du PLE
 p = PLE(game)
 
-# Choix des états utiles
+# Choix des états utiles et de la validité de la matrice
 redefinition = True
                     
                     
@@ -111,6 +110,12 @@ if limites_à_définir :
         reward = p.act(action)
 
     print ("Fin de la phase de recherche des limites : ")
+    
+    # Condition d'ajout de nouveaux états à un entraînement déjà existant         
+    if NEW_STATES_CHOSEN != []:
+        print("Ajout de nouveaux états à l'IA...")
+        agent.new_states_add(NEW_STATES_CHOSEN)
+        print("Ajout terminé")
 
 print (agent.limites)
 print (agent.actions)
