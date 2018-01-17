@@ -10,7 +10,7 @@ from ple import PLE
 def choose_game(path) :
     game_list = []
     for game in os.listdir(path) :
-        if game [:2] != "__" and (game [-2:] == "py" or 'assets' in os.listdir(path+'/'+ game))  :
+        if (game [:2] != "__" and (game [-2:] == "py")) or (os.path.isdir(game) and 'assets' in os.listdir(path+'/'+ game))  :
             game_list.append(game[:-3] if game [-2:] == "py" else game)
     return game_list
 
@@ -19,6 +19,14 @@ def choose_game_state(game) :
     for key in list(game.getGameState().keys()) :
         if input ("Prendre en compte " + key + " ? (y/n) \n") == 'y' :
             STATES_CHOSEN.append(key)
+    return STATES_CHOSEN
+
+def choose_new_states(game,state_list):
+    STATES_CHOSEN = []
+    for key in list(game.getGameState().keys:
+        if key not in state_list:
+            if input ("Prendre en compte " + key + " ? (y/n) \n") == 'y' :
+                STATES_CHOSEN.append(key)
     return STATES_CHOSEN
     
 # Choix du jeu
@@ -55,6 +63,10 @@ p = PLE(game)
 
 # Choix des états utiles
 limites_à_définir = True
+matrix_validity = False
+discretization_chosen = 20
+                    
+                    
 try :
     os.mkdir(DOSSIER) 
     STATES_CHOSEN = choose_game_state(game)
@@ -66,21 +78,27 @@ except FileExistsError :
             words=line.strip().split()
             if len(words) == 3 :
                 temp_state.append(words[0])
+            if len(words) == 2:
+                        discretization_chosen = words[1]
     print("Le jeu a été entraîné avec les états suivants : ", temp_state)
     if input("Continuer avec ces états ? (y/n)") == "y" :
         STATES_CHOSEN = temp_state
-        limites_à_définir = False
+        NEW_STATES_CHOSEN = choose_new_states(games,temp_state)
+        if NEW_STATES_CHOSEN == []:
+            matrix_validity = True
+            limites_à_définir = False
     else :
         STATES_CHOSEN = choose_game_state(game)
+        NEW_STATES_CHOSEN = []           
 print (DOSSIER,FICHIER_REWARD,FICHIER_STATE)
-print ("Les états choisis sont : ",STATES_CHOSEN)
+print ("Les états choisis sont : ",STATES_CHOSEN + NEW_STATES_CHOSEN)
 
 
-print (p.getActionSet())
-
+print (p.getActionSet())                    
+                    
 # création de l'agent
 print("creating agent...")
-agent = ag.Agent(p.getActionSet(),game.getGameState(),FICHIER_REWARD,FICHIER_STATE,STATES_CHOSEN)
+agent = ag.Agent(p.getActionSet(),game.getGameState(),FICHIER_REWARD,FICHIER_STATE,STATES_CHOSEN,NEW_STATES_CHOSEN,discretization_chosen)
 print("agent created")
 
 # Boucle pour définir les limites des états
@@ -127,7 +145,7 @@ while continuer :
         # suivi de la progression (tous les 5 pourcents)
         if int(f/nb_frames*100)==5+pourcent :
             pourcent = int(f/nb_frames*100)
-            print("Apprentissage finit à  : ",pourcent,'%\n')
+            print("Apprentissage fini à  : ",pourcent,'%\n')
     print ("Fin de la phase d'apprentissage.")
     
     
@@ -160,6 +178,7 @@ with open(FICHIER_STATE,'w') as Fichier:
         Fichier.write(state + ' ' + str(agent.limites[state][0]) + ' ' + str(agent.limites[state][1]) + '\n')
     for i in range(len(agent.actions)):
         Fichier.write(str(agent.actions[i]) +'\n')
+    Fichier.write('DISCRETIZATION ',discretization_chosen
         
         
 print ("Done")
