@@ -8,7 +8,7 @@ from ple import PLE
 
 class Agent():
 
-    def __init__(self, actions, states,fichier_reward,fichier_state,STATES_CHOSEN):
+    def __init__(self, actions, states,fichier_reward,fichier_state,STATES_CHOSEN,NEW_STATES_CHOSEN):
         self.actions = []
         self.last_action = None
         self.last_states = None
@@ -30,6 +30,8 @@ class Agent():
                     if len(words)==3:
                         self.limites[words[0]] = [ float(words[1]), float(words[2])]
                         self.id_states.append(words[0])
+                    elif len(words)==2:
+                        self.DISCRETIZATION=words[1]
                     else:
                         if words[0] == 'None':
                             self.actions.append(None)
@@ -46,16 +48,17 @@ class Agent():
             print("Les fichiers n'ont pas pu être lus")
             print(error)
             
+            states = NEW_STATES_CHOSEN + STATES_CHOSEN
             shape=()
 			
-            if STATES_CHOSEN == []:
+            if states == []:
                 for key in states.keys():
                     self.limites[key] = [0,0]
                     self.id_states.append(key)
                     shape+=(self.DISCRETIZATION+1,)
                     
             else:
-                for state in STATES_CHOSEN:
+                for state in states:
                     self.limites[state] = [0,0]
                     self.id_states.append(state)
                     shape+=(self.DISCRETIZATION+1,)
