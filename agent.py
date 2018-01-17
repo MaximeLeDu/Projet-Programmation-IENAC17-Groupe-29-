@@ -65,8 +65,8 @@ class Agent():
             shape+=(len(actions),)
             print(shape)
             self.rewards=np.zeros(shape)
-            self.actions = actions
-			    
+            self.actions = action
+            
 			    
     def limite_defineur(self,states):
     
@@ -76,6 +76,31 @@ class Agent():
             
             if states[state]<self.limites[state][0]:
                 self.limites[state][0] = states[state]
+            
+            
+    def new_states_add(self,new_states):
+        len_tot = len(self.states)
+        previous_len_matrix = len_tot - len(new_states) +1
+        shape=()
+        index =()
+        tot_elem=1
+        for i in range len_tot:
+            shape+=(self.DISCRETIZATION+1,)
+            index+=(0)
+            tot_elem*=(DISCRETIZATION+1)
+        shape+=len(self.actions,)
+        new_matrix = np.zeros(shape)
+        for i in range tot_elem:
+            new_matrix[index] = self.rewards[index[:pervious_len_matrix]]
+            agent.coord_increment(index,shape)
+        self.rewards=new_matrix
+    
+    def coord_increment(self,coord,shape,i=0) :
+    if coord[i] == shape[i]-1 :
+        coord[i]=0
+        coord_plus_1(coord,shape,i+1)
+    else :
+        coord[i]+=1
             
             
     def random(self):
