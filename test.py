@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import pickle
 import os
-import agent as ag
+import agent_final as ag
 
 from random import random
 from ple import PLE
@@ -23,12 +23,16 @@ def choose_game_state(game) :
 
 def choose_new_states(game,state_list):
     STATES_CHOSEN = []
-    for key in list(game.getGameState().keys:
-        if key not in state_list:
+    
+    for key in list(game.getGameState().keys()) :
+        
+        if key not in state_list :
             if input ("Prendre en compte " + key + " ? (y/n) \n") == 'y' :
                 STATES_CHOSEN.append(key)
     return STATES_CHOSEN
-    
+
+## Initialisation
+
 # Choix du jeu
 game_list = choose_game("ple/games")
 print (game_list)
@@ -63,10 +67,10 @@ p = PLE(game)
 # Choix des états utiles et de la validité de la matrice
 redefinition = True
                     
-                    
 try :
     os.mkdir(DOSSIER) 
     STATES_CHOSEN = choose_game_state(game)
+    NEW_STATES_CHOSEN = []
 except FileExistsError :
     print ("Le dossier de ce jeu existe déjà")
     with open(FICHIER_STATE) as fichier:
@@ -78,7 +82,7 @@ except FileExistsError :
     print("Le jeu a été entraîné avec les états suivants : ", temp_state)
     if input("Continuer avec ces états ? (y/n)") == "y" :
         STATES_CHOSEN = temp_state
-        NEW_STATES_CHOSEN = choose_new_states(games,temp_state)
+        NEW_STATES_CHOSEN = choose_new_states(game,temp_state)
         if NEW_STATES_CHOSEN == []:
             redefinition = False
     else :
@@ -96,9 +100,14 @@ agent = ag.Agent(p.getActionSet(),game.getGameState(),FICHIER_REWARD,FICHIER_STA
 print("agent created")
 
 # Boucle pour définir les limites des états
-if limites_à_définir :
+if redefinition :
     print("Recherche des valeurs limites des états...")
     
+    # Condition d'ajout de nouveaux états à un entraînement déjà existant         
+    if NEW_STATES_CHOSEN != []:
+        print("Ajout de nouveaux états à l'IA...")
+        agent.new_states_add(NEW_STATES_CHOSEN)
+        print("Ajout terminé")
     for f in range(10000):
         # if the game is over
         if p.game_over():
@@ -111,17 +120,14 @@ if limites_à_définir :
 
     print ("Fin de la phase de recherche des limites : ")
     
-    # Condition d'ajout de nouveaux états à un entraînement déjà existant         
-    if NEW_STATES_CHOSEN != []:
-        print("Ajout de nouveaux états à l'IA...")
-        agent.new_states_add(NEW_STATES_CHOSEN)
-        print("Ajout terminé")
+
 
 print (agent.limites)
 print (agent.actions)
         
 
-# Boucle d'entrainement
+## Boucle d'entrainement
+
 continuer = True
 while continuer :
     nb_frames = int(input ("Phase d'entraînement. \nTaille de l'apprentissage ?"))
@@ -137,6 +143,7 @@ while continuer :
         # if the game is over
         if p.game_over():
             p.reset_game()
+            game.reset()
         
         states = game.getGameState()
         action = agent.training(reward, agent.discretize(states))
@@ -155,9 +162,11 @@ while continuer :
         p.force_fps = False
         p.display_screen = True
         p.reset_game()
+        game.reset()
         while (not p.game_over() or f < 500) and f < 1000  :
             if p.game_over():
                 p.reset_game()
+                game.reset()
             states = game.getGameState()
             action = agent.AI(reward,agent.discretize(states))
             reward = p.act(action)
@@ -165,6 +174,7 @@ while continuer :
     
     continuer = True if input("Continuer l'apprentissage ? (y/n)") == "y" else False
     
+## Sauvegarde et fin
 
 print("Sauvegarde de la matrice des récompense et des états...")
 

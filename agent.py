@@ -14,7 +14,7 @@ class Agent():
         self.last_states = None
         self.limites = {}
         self.id_states = []
-        self.DISCRETIZATION = 20
+        self.DISCRETIZATION = 50
         self.LENGTH = 1000
         self.RANDOM_PARADIGM=0.6
         self.ALPHA = 0.1
@@ -65,7 +65,7 @@ class Agent():
             shape+=(len(actions),)
             print(shape)
             self.rewards=np.zeros(shape)
-            self.actions = action
+            self.actions = actions
             
 			    
     def limite_defineur(self,states):
@@ -79,28 +79,44 @@ class Agent():
             
             
     def new_states_add(self,new_states):
-        len_tot = len(self.states)
-        previous_len_matrix = len_tot - len(new_states) +1
+        previous_len = len(self.id_states)
+        for state in new_states :
+            self.limites[state] = [0,0]
+            self.id_states.append(state)
+            
+            
+        len_tot = len(self.id_states)    
         shape=()
-        index =()
+        index =(0,)
         tot_elem=1
-        for i in range len_tot:
+            
+        for i in range(len_tot) :
             shape+=(self.DISCRETIZATION+1,)
-            index+=(0)
-            tot_elem*=(DISCRETIZATION+1)
-        shape+=len(self.actions,)
+            index+=(0,)
+            tot_elem*=(self.DISCRETIZATION+1)
+        shape+=(len(self.actions),)
+        tot_elem*=len(self.actions)
+        
         new_matrix = np.zeros(shape)
-        for i in range tot_elem:
-            new_matrix[index] = self.rewards[index[:pervious_len_matrix]]
-            agent.coord_increment(index,shape)
+        
+
+        index = list(index)
+        
+        for i in range (tot_elem-1) :
+            new_matrix[tuple(index)] = self.rewards[tuple(index)[:previous_len]+(index[-1],)]
+            self.coord_increment(index,shape)
+        new_matrix[tuple(index)] = self.rewards[tuple(index)[:previous_len]+(index[-1],)]
         self.rewards=new_matrix
+
     
     def coord_increment(self,coord,shape,i=0) :
-    if coord[i] == shape[i]-1 :
-        coord[i]=0
-        coord_plus_1(coord,shape,i+1)
-    else :
-        coord[i]+=1
+        if coord[i] == shape[i]-1 :
+            coord[i]=0
+            self.coord_increment(coord,shape,i+1)
+        else :
+            coord[i]+=1
+    
+
             
             
     def random(self):
