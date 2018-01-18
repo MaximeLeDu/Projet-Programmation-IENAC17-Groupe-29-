@@ -23,6 +23,7 @@ class Agent():
 		
         try:
             self.rewards = pickle.load(open(fichier_reward,"rb"))
+			self.DISCRETIZATION = self.rewards.shape[0] - 1
 
             with open(fichier_state) as fichier:
                 for line in fichier:
@@ -30,8 +31,6 @@ class Agent():
                     if len(words)==3:
                         self.limites[words[0]] = [ float(words[1]), float(words[2])]
                         self.id_states.append(words[0])
-                    elif len(words)==2:
-                        self.DISCRETIZATION=words[1]
                     else:
                         if words[0] == 'None':
                             self.actions.append(None)
