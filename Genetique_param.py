@@ -61,9 +61,9 @@ def mutation(a,g,e,n,p):
         else:
             g0=g-0.1*random.random()
         if random.random()<0.5:
-            g0=g+0.1*random.random()
+            e0=e+0.1*random.random()
         else:
-            g0=g-0.1*random.random()
+            e0=e-0.1*random.random()
         if random.random()<0.5:
             n0=int(n+5*random.random())
         else:
