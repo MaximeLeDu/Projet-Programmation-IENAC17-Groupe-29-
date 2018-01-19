@@ -2,7 +2,7 @@ import numpy as np
 import sys
 import pickle
 import os
-import agent_final as ag
+import agent as ag
 
 from random import random
 from ple import PLE
