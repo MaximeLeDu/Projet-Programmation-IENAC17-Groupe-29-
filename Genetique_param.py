@@ -2,11 +2,12 @@ import math
 import random
 from ple import PLE
 import agent as ag
+from ple.games import Pong
 
 def genetique(générations,N,proba,game,STATES_CHOSEN):
 
     p=PLE(game,force_fps = True,display_screen = False)
-        
+    Fonctions = []
     for j in range(N):
         Fonctions.append([calcul_poids(1/(j+1.1),1/(j+1.5),1/(j+1.3),4*(j+1),p,STATES_CHOSEN),1/(j+1.1),1/(j+1.5),1/(j+1.3),4*(j+1)])
 #Cette boucle initialise N solutions initiales.
@@ -80,17 +81,18 @@ def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
     return(alpha0,croi1,eps1,croi3,alpha1,croi2,eps0,croi4)
     
 def calcul_poids(a,b,c,d,p,STATES_CHOSEN):
-    agent = ag.Agent(p.getActionSet(),game.getGameState(),None,None,STATES_CHOSEN,[])
+    agent = ag.Agent(p.getActionSet(),p.game.getGameState(),None,None,STATES_CHOSEN,[])
     score = 0
+    reward = 0
     
     for f in range(500000):
         
         # if the game is over
         if p.game_over():
             p.reset_game()
-            game.reset()
+            p.game.reset()
         
-        states = game.getGameState()
+        states = p.game.getGameState()
         action = agent.training(reward, agent.discretize(states))
         reward = p.act(action)
         
@@ -98,13 +100,13 @@ def calcul_poids(a,b,c,d,p,STATES_CHOSEN):
         
         if p.game_over():
             p.reset_game()
-            game.reset()
+            p.game.reset()
         
-        states = game.getGameState()
-        action = agent.AI(reward, agent.discretize(states))
+        states = p.game.getGameState()
+        action = agent.AI(agent.discretize(states))
         reward = p.act(action)
         score+=reward
         
     return score
     
-    
+genetique(2,2,0.6,Pong(),["player_y","ball_y"])
