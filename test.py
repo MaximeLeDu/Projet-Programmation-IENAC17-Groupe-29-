@@ -2,19 +2,25 @@ import numpy as np
 import sys
 import pickle
 import os
-import agent as ag
+import agent_final as ag
 
 from random import random
 from ple import PLE
 
 def choose_game(path) :
+    """
+    Renvoit la liste des jeux possible contenue dans le dossier path 
+    """
     game_list = []
     for game in os.listdir(path) :
-        if (game [:2] != "__" and (game [-2:] == "py")) or (os.path.isdir(game) and 'assets' in os.listdir(path+'/'+ game))  :
+        if game [:2] != "__" and (game [-2:] == "py" or (os.path.isdir(path+"/"+game) and 'assets' in os.listdir(path+"/"+ game)))  :
             game_list.append(game[:-3] if game [-2:] == "py" else game)
     return game_list
 
 def choose_game_state(game) :
+    """
+    Renvoit la liste des états choisis par l'utilisateur
+    """
     STATES_CHOSEN = []
     for key in list(game.getGameState().keys()) :
         if input ("Prendre en compte " + key + " ? (y/n) \n") == 'y' :
@@ -22,6 +28,9 @@ def choose_game_state(game) :
     return STATES_CHOSEN
 
 def choose_new_states(game,state_list):
+    """
+    Renvoit la liste des nouveaux états choisis par l'utilisateur
+    """
     STATES_CHOSEN = []
     
     for key in list(game.getGameState().keys()) :
