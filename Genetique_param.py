@@ -2,7 +2,7 @@ import math
 import random
 from ple import PLE
 import agent as ag
-from ple.games import Pong
+from ple.games import Catcher
 
 def genetique(générations,N,proba,game,STATES_CHOSEN):
 
@@ -69,8 +69,8 @@ def mutation(a,g,e,n,p):
         else:
             n0=int(n-5*random.random())
         if a0>0 and a0<1 and g0>0 and g0<1 and  e0>0 and e0<1 and n0>0:
-            return (a0,b0,c0,n0)
-    return(a,b,c,n)
+            return (a0,g0,e0,n0)
+    return(a,g,e,n)
 
 
 def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
@@ -80,12 +80,13 @@ def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
     croi4=int(norm1-random.random()*(norm0-norm1))
     return(alpha0,croi1,eps1,croi3,alpha1,croi2,eps0,croi4)
     
-def calcul_poids(a,b,c,d,p,STATES_CHOSEN):
-    agent = ag.Agent(p.getActionSet(),p.game.getGameState(),None,None,STATES_CHOSEN,[])
+def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
+    agent = ag.Agent(p.getActionSet(),p.game.getGameState(),None,None,STATES_CHOSEN,[],a,g,e,n)
     score = 0
     reward = 0
+    agent.limite_defineur(p.game.getGameState())
     
-    for f in range(500000):
+    for f in range(100000):
         
         # if the game is over
         if p.game_over():
@@ -109,4 +110,4 @@ def calcul_poids(a,b,c,d,p,STATES_CHOSEN):
         
     return score
     
-genetique(2,2,0.6,Pong(),["player_y","ball_y"])
+print("Resultat :",genetique(4,4,0.6,Catcher(),["fruit_x","player_x"]))

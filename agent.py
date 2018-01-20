@@ -8,22 +8,20 @@ from ple import PLE
 
 class Agent():
 
-    def __init__(self, actions, states,fichier_reward,fichier_state,STATES_CHOSEN,NEW_STATES_CHOSEN):
+    def __init__(self, actions, states,fichier_reward,fichier_state,STATES_CHOSEN,NEW_STATES_CHOSEN,alpha=0.1,gamma=0.9,epsilon=0.6,discretization=20):
         self.actions = []
         self.last_action = None
         self.last_states = None
         self.limites = {}
         self.id_states = []
-        self.DISCRETIZATION = 50
-        self.LENGTH = 1000
-        self.RANDOM_PARADIGM=0.6
-        self.ALPHA = 0.1
-        self.GAMMA = 0.9
-        self.NORMALIZE = 1
+        self.DISCRETIZATION = discretization
+        self.EPSILON=epsilon
+        self.ALPHA = alpha
+        self.GAMMA = gamma
 		
         try:
             self.rewards = pickle.load(open(fichier_reward,"rb"))
-			self.DISCRETIZATION = self.rewards.shape[0] - 1
+            self.DISCRETIZATION = self.rewards.shape[0] -1
 
             with open(fichier_state) as fichier:
                 for line in fichier:
@@ -62,7 +60,6 @@ class Agent():
                     self.id_states.append(state)
                     shape+=(self.DISCRETIZATION+1,)
             shape+=(len(actions),)
-            print(shape)
             self.rewards=np.zeros(shape)
             self.actions = actions
             
@@ -125,19 +122,19 @@ class Agent():
                 
     
     def training(self, reward, states):
-
         if self.last_action!=None:
             choix = random()
 
 			#AI paradigm of choice
-            if choix > self.RANDOM_PARADIGM:
+            if choix > self.EPSILON:
 		
                 matrix=self.rewards[states]
                 action = np.random.choice([action for action, value in enumerate(matrix) if value == np.max(matrix)])
 
             else:
                 action = np.random.randint(0, len(self.actions))
-            self.rewards[self.last_states + (self.last_action,)]+=self.ALPHA*(reward*self.NORMALIZE + self.GAMMA*np.max(self.rewards[states]) - self.rewards[self.last_states + (self.last_action,)])
+            updated_state = self.last_states + (self.last_action,)
+            self.rewards[updated_state]+=self.ALPHA*(reward+ self.GAMMA*np.max(self.rewards[states]) - self.rewards[updated_state])
 			
 		#Initialization 
         else:
@@ -149,7 +146,7 @@ class Agent():
         return self.actions[action]
 		
 		
-    def AI(self,reward,states):
+    def AI(self,states):
 		
         matrix=self.rewards[states]
         """
