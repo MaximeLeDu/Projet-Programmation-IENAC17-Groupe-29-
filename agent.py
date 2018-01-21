@@ -8,7 +8,7 @@ from ple import PLE
 
 class Agent():
 
-    def __init__(self, actions, states,fichier_reward,fichier_state,STATES_CHOSEN,NEW_STATES_CHOSEN,alpha=0.1,gamma=0.9,epsilon=0.6,discretization=20):
+    def __init__(self, actions, states,fichier_reward,fichier_state,STATES_CHOSEN,NEW_STATES_CHOSEN,alpha=0.02441993239992056,gamma=0.15059726177075877,epsilon=0.00845329800002579,discretization=10):
         self.actions = []
         self.last_action = None
         self.last_states = None

@@ -97,7 +97,7 @@ def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
         action = agent.random()
         reward = p.act(action)
     
-    for f in range(500000):
+    for f in range(1000000):
         
         # if the game is over
         if p.game_over():
@@ -108,7 +108,7 @@ def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
         action = agent.training(reward, agent.discretize(states))
         reward = p.act(action)
         
-    for f in range(1000):
+    for f in range(50000):
         
         if p.game_over():
             p.reset_game()
