@@ -4,7 +4,6 @@ import random
 import numpy as np
 import ddqn
 from ple import PLE
-from ple.games import Pong
 
 
 def train(nb_parties,agent,p):
