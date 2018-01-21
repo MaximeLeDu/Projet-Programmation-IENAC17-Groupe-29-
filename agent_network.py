@@ -13,14 +13,14 @@ from torch.autograd import Variable
 Transition = namedtuple('transition',('state','action','next_state','reward'))
 
 class ReplayMemory(object):
-
+    """Cette classe permet de sauvegarder des états pour les réutiliser ensuite pour l'entraînement."""
     def __init__(self, capacity):
         self.capacity = capacity
         self.memory = []
         self.position = 0
 
     def push(self, *args):
-        """Saves a transition."""
+        """Sauvegarde une transition."""
         if len(self.memory) < self.capacity:
             self.memory.append(None)
         self.memory[self.position] = Transition(*args)
@@ -34,6 +34,8 @@ class ReplayMemory(object):
 
 
 class DQN(nn.Module):
+    """Ce réseau de neurones est composée d'une couche cachée connectée par deux fonctions linéaires ainsi qu'une 
+    fonction d'activation ReLU classique (qui renvoie la partie positive de chaque élément des tenseurs."""
 
     def __init__(self,first_layer,last_layer):
         super(DQN, self).__init__()
@@ -114,10 +116,6 @@ class Agent():
 
         non_final_mask = self.ByteTensor(tuple(map(lambda s: s is not None,
                                               batch.next_state)))
-
-        # We don't want to backprop through the expected action values and volatile
-        # will save us on temporarily changing the model parameters'
-        # requires_grad to False!
         non_final_next_states = Variable(torch.cat([s for s in batch.next_state
                                                     if s is not None]),
                                          volatile=True)
@@ -128,24 +126,21 @@ class Agent():
         action_batch.data.resize_(self.BATCH_SIZE,1)
         reward_batch = Variable(torch.cat(batch.reward))
 
-        # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
-        # columns of actions taken
+        # On calcule les récompenses des états du batch puis on les associe aux actions choisies
         state_action_values = self.net(state_batch).gather(1, action_batch)
 
-        # Compute V(s_{t+1}) for all next states.
+        # On calcule les valeurs expérimentales des états suivants
         next_state_values = Variable(torch.zeros(self.BATCH_SIZE).type(self.FloatTensor))
         
         next_state_values[non_final_mask] = self.net(non_final_next_states).max(1)[0]
-        # Now, we don't want to mess up the loss with a volatile flag, so let's
-        # clear it. After this, we'll just end up with a Variable that has
-        # requires_grad=False
+        # On ne veut pas perturber la rétropropagation par un tensor volatile
         next_state_values.volatile = False
-        # Compute the expected Q values
+        # Calcule la valeur attendue par le Q-Learning
         expected_state_action_values = (next_state_values * self.GAMMA) + reward_batch
-        # Compute Huber loss
+        # Calcule la perte de Huber
         loss = F.smooth_l1_loss(state_action_values, expected_state_action_values)
 
-        # Optimize the model
+        # Optimise le modèle
         self.optimizer.zero_grad()
         loss.backward()
         
