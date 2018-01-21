@@ -36,7 +36,8 @@ def fonction_de_tri(T):
 #Le tableau des coefficients est trié selon la première composante de chaque élément, c'est-à-dire leur poids, ce qui permet de faciliter la sélection des meilleures solutions.
 
 def epuration(T,N):
-    T.sort(key=fonction_de_tri)
+    T.sort(key=fonction_de_tri,reverse = True)
+    print(T)
     i,j=0,len(T)-1
     while i<j:
         if T[i]==T[i+1]:
@@ -78,15 +79,25 @@ def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
     croi2=gamma1-random.random()*(gamma0-gamma1)
     croi3=int(norm0-random.random()*(norm0-norm1))
     croi4=int(norm1-random.random()*(norm0-norm1))
-    return(alpha0,croi1,eps1,croi3,alpha1,croi2,eps0,croi4)
+    if croi3>0 and croi4>0 and croi1>0 and croi1<1 and croi2>0 and croi2<0:
+        return(alpha0,croi1,eps1,croi3,alpha1,croi2,eps0,croi4)
+    return(alpha0,gamma0,eps1,norm1,alpha1,gamma1,eps0,norm0)
     
 def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
     agent = ag.Agent(p.getActionSet(),p.game.getGameState(),None,None,STATES_CHOSEN,[],a,g,e,n)
     score = 0
     reward = 0
-    agent.limite_defineur(p.game.getGameState())
+    for f in range(10000):
     
-    for f in range(100000):
+        if p.game_over():
+            p.reset_game()
+        
+        states = p.game.getGameState()    
+        agent.limite_defineur(states)
+        action = agent.random()
+        reward = p.act(action)
+    
+    for f in range(500000):
         
         # if the game is over
         if p.game_over():
@@ -110,4 +121,4 @@ def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
         
     return score
     
-print("Resultat :",genetique(4,4,0.6,Catcher(),["fruit_x","player_x"]))
+print("Resultat :",genetique(7,7,0.6,Catcher(),["fruit_x","player_x"]))
