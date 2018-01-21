@@ -9,19 +9,16 @@ from keras.optimizers import Adam
 from keras.models import Sequential
 
 
-# DQN Agent for the Cartpole
-# it uses Neural Network to approximate q function
-# and replay memory & target q network
 class DQNAgent:
     def __init__(self, p):
 
-        # get size of state and action
+        # On récupère les états et les actions, ainsi que leurs tailles
         self.states = p.game.getGameState()
         self.state_size = len(self.states)
         self.actions = p.getActionSet()
         self.action_size = len(self.actions)
 
-        # These are hyper parameters for the DQN
+        # Paramètres du réseau
         self.discount_factor = 0.99
         self.learning_rate = 0.001
         self.epsilon = 1.0
@@ -29,19 +26,17 @@ class DQNAgent:
         self.epsilon_min = 0.01
         self.batch_size = 64
         self.train_start = 1000
-        # create replay memory using deque
+        # Mémoire
         self.memory = deque(maxlen=2000)
 
-        # create main model and target model
+        # Deux réseaux de neurones différents sont utilisés dans cet algorithme
         self.model = self.build_model()
         self.target_model = self.build_model()
 
-        # initialize target model
         self.update_target_model()
 
 
-    # approximate Q function using Neural Network
-    # state is input and Q Value of each action is output of network
+    # Le réseau contient deux couches cachées avec des fonctions d'activation de type ReLU
     def build_model(self):
         model = Sequential()
         model.add(Dense(24, input_dim=len(self.states), activation='relu',
@@ -54,11 +49,11 @@ class DQNAgent:
         model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
         return model
 
-    # after some time interval update the target model to be same with model
+    # On fixe les poids du réseau cible au réseau courant
     def update_target_model(self):
         self.target_model.set_weights(self.model.get_weights())
 
-    # get action from model using epsilon-greedy policy
+    # On récupère l'action suivant une politique epsilon-greedy
     def get_action(self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(len(self.actions))
@@ -70,13 +65,13 @@ class DQNAgent:
         q_value = self.model.predict(state)
         return np.argmax(q_value[0])
 
-    # save sample <s,a,r,s'> to the replay memory
+    # On ajoute l'échantillon à la mémoire
     def append_sample(self, state, action, reward, next_state):
         self.memory.append((state, action, reward, next_state))
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
-    # pick samples randomly from replay memory (with batch_size)
+    # On récupère divers échantillons pour l'entraînement
     def train_model(self):
         if len(self.memory) < self.train_start:
             return
@@ -97,11 +92,10 @@ class DQNAgent:
         target_val = self.target_model.predict(update_target)
 
         for i in range(self.batch_size):
-            # Q Learning: get maximum Q value at s' from target model
+            # On applique l'équation du Q-Learning
             target[i][action[i]] = reward[i] + self.discount_factor * (
                 np.amax(target_val[i]))
 
-        # and do the model fit!
         self.model.fit(update_input, target, batch_size=self.batch_size,
                        epochs=1, verbose=0)
 
