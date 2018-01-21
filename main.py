@@ -87,7 +87,10 @@ except FileExistsError :
             redefinition = False
     else :
         STATES_CHOSEN = choose_game_state(game)
-        NEW_STATES_CHOSEN = []           
+        NEW_STATES_CHOSEN = []    
+        #On ne garde pas les fichiers sauvegardés quand on change d'états
+        os.remove(FICHIER_STATE)
+        os.remove(FICHIER_REWARD)
 print (DOSSIER,FICHIER_REWARD,FICHIER_STATE)
 print ("Les états choisis sont : ",STATES_CHOSEN + NEW_STATES_CHOSEN)
 
