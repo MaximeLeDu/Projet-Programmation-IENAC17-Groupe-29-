@@ -84,6 +84,7 @@ def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
     return(alpha0,gamma0,eps1,norm1,alpha1,gamma1,eps0,norm0)
     
 def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
+    #On fait un entraînement avec les paramètres, le poids est donné par la somme des récompenses sur une partie de taille fixée.
     agent = ag.Agent(p.getActionSet(),p.game.getGameState(),None,None,STATES_CHOSEN,[],a,g,e,n)
     score = 0
     reward = 0
