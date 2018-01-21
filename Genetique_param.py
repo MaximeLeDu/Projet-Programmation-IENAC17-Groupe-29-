@@ -5,7 +5,13 @@ import agent as ag
 from ple.games import Catcher
 
 def genetique(générations,N,proba,game,STATES_CHOSEN):
-    """Cet algorithme utilise un paradigme génétique pour calculer, avec un jeu et des états donnés, des paramètres de Q-Learning renvoyant une solution efficace, ainsi que la qualité de la solution renvoyée"""
+    """Cet algorithme utilise un paradigme génétique pour calculer, avec un jeu et des états donnés, des paramètres de Q-Learning efficaces, ainsi que la qualité de l'IA renvoyée.
+    générations : int (nombre de générations qui se succèdent).
+    N : int (nombre de solutions dans chaque générations).
+    proba : float (probabilité que la solution mute).
+    game : str (jeu du PLE)
+    STATES_CHOSEN : str list (liste des états considérés dans le jeu).
+    Cette fonction renvoie une liste composée des quatre paramètres alpha, gamma, epsilon et discretize, ainsi que du poids de la solution associée."""
 
     p=PLE(game,force_fps = True,display_screen = False)
     Fonctions = []
@@ -37,6 +43,9 @@ def fonction_de_tri(T):
 #Le tableau des coefficients est trié selon la première composante de chaque élément, c'est-à-dire leur poids, ce qui permet de faciliter la sélection des meilleures solutions.
 
 def epuration(T,N):
+    """Cette fonction permet de sélectionner les meilleurs solutions calculées.
+    T : list (tableau des solutions).
+    N : int(nombre de solutions voulues)."""
     T.sort(key=fonction_de_tri,reverse = True)
     print(T)
     i,j=0,len(T)-1
@@ -53,6 +62,7 @@ def epuration(T,N):
 
 
 def mutation(a,g,e,n,p):
+    """Cette solution permet de faire muter aléatoirement les paramètres a (float), g (float), e (float) et n (int) en fonction de la probabilité p(float)"""
     if random.random()<p:
         if random.random()<0.5:
             a0=a+0.1*random.random()
@@ -77,6 +87,7 @@ def mutation(a,g,e,n,p):
 
 
 def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
+    """Cette fonction permet de croiser deux fonctions entre elles"""
     croi1=gamma0-random.random()*(gamma0-gamma1)
     croi2=gamma1-random.random()*(gamma0-gamma1)
     croi3=int(norm0-random.random()*(norm0-norm1))
@@ -87,7 +98,7 @@ def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
 #Les différentes solutions sont croisées pour obtenir une plus grande diversité de solutions
     
 def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
-    #On fait un entraînement avec les paramètres, le poids est donné par la somme des récompenses sur une partie de taille fixée.
+    """On fait un entraînement avec les paramètres, le poids est donné par la somme des récompenses sur une partie de taille fixée."""
     agent = ag.Agent(p.getActionSet(),p.game.getGameState(),None,None,STATES_CHOSEN,[],a,g,e,n)
     score = 0
     reward = 0
