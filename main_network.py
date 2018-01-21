@@ -2,7 +2,6 @@ import agent_network as ag
 import os
 from itertools import count
 from ple import PLE
-from ple.games import Pong
 import torch
 
 
