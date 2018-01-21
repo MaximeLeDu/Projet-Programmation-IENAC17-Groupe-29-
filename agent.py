@@ -20,6 +20,7 @@ class Agent():
         self.GAMMA = gamma
 		
         try:
+			#On essaye de lire les fichiers d'entraînements précédents
             self.rewards = pickle.load(open(fichier_reward,"rb"))
             self.DISCRETIZATION = self.rewards.shape[0] -1
 
@@ -65,7 +66,7 @@ class Agent():
             
 			    
     def limite_defineur(self,states):
-    
+    #Cette fonction calcule la dispersion des valeurs des différents états du jeu
         for state in self.id_states:
             if states[state]>self.limites[state][1]:
                 self.limites[state][1] = states[state]
@@ -75,6 +76,7 @@ class Agent():
             
             
     def new_states_add(self,new_states):
+	#Cette fonction permet de rajouter de nouveaux états à un entraînement déjà effectué, en initialisant une nouvelle matrice avec les paramètres de l'ancienne matrice
         previous_len = len(self.id_states)
         for state in new_states :
             self.limites[state] = [0,0]
@@ -99,6 +101,7 @@ class Agent():
         index = list(index)
         
         for i in range (tot_elem-1) :
+			#Chaque élément de la nouvelle matrice devient l'élément de la matrice précédente posédant les mêmes valeurs d'actions et d'états en commun
             new_matrix[tuple(index)] = self.rewards[tuple(index)[:previous_len]+(index[-1],)]
             self.coord_increment(index,shape)
         new_matrix[tuple(index)] = self.rewards[tuple(index)[:previous_len]+(index[-1],)]
@@ -106,6 +109,7 @@ class Agent():
 
     
     def coord_increment(self,coord,shape,i=0) :
+	#Grâce à cette fonction, il est possible de parcourir facilement toutes les coordonnées de la matrice dans la fonction précédente
         if coord[i] == shape[i]-1 :
             coord[i]=0
             self.coord_increment(coord,shape,i+1)
@@ -116,16 +120,18 @@ class Agent():
             
             
     def random(self):
+	#Le paradigme aléatoire permet de découvrir rapidement les limites des valeurs de chaque état
     
         action = np.random.randint(0, len(self.actions))
         return self.actions[action]
                 
     
     def training(self, reward, states):
+	#Cette fonction permet de choisir l'action à faire, suivant un paradigme epsilon-greedy, et de mettre à jour la matrice des récompenses
         if self.last_action!=None:
             choix = random()
 
-			#AI paradigm of choice
+			#Paradigme de choix de l'IA
             if choix > self.EPSILON:
 		
                 matrix=self.rewards[states]
@@ -136,17 +142,18 @@ class Agent():
             updated_state = self.last_states + (self.last_action,)
             self.rewards[updated_state]+=self.ALPHA*(reward+ self.GAMMA*np.max(self.rewards[states]) - self.rewards[updated_state])
 			
-		#Initialization 
+		#Initialisation 
         else:
             action = np.random.randint(0, len(self.actions))
 			
-		#Update of the last movements and states
+		#Mise à jour des derniers états et actions
         self.last_states = states
         self.last_action = action
         return self.actions[action]
 		
 		
     def AI(self,states):
+	#On choisit toujours la meilleure solution quand on joue au jeu en pratique
 		
         matrix=self.rewards[states]
         """
@@ -158,6 +165,7 @@ class Agent():
 		
 		
     def discretize(self,states):
+	#Cette fonction renvoie un ensemble d'états choisis dont la valeur est discretisée sous forme d'entiers, dans la tranche [0,self.DISCRETIZATION]
     
         self.limite_defineur(states)
         discretized_states=()
