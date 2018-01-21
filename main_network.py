@@ -7,17 +7,17 @@ import torch
 
 def train(nb_parties,agent,p):
     for i_episode in range(nb_parties):
-        # Initialize the environment and state
+        # Initialise l'environnement et les états
         p.reset_game()
         state = p.game.getGameState()
         state = agent.FloatTensor([float(state[value]) for value in agent.states])
         for t in count():
-            # Select and perform an action
+            # On sélectionne puis exécute une action
             action= agent.select_action(state)
             reward= p.act(agent.actions[int(action)])
             reward = agent.FloatTensor([reward])
 
-            # Observe new state
+            # On observe le nouvel état
             if not p.game_over():
                 next_state = p.game.getGameState()
                 print(next_state)
@@ -25,13 +25,12 @@ def train(nb_parties,agent,p):
             else:
                 next_state = None
 
-            # Store the transition in memory
+            # Ajoute la transition à la mémoire
             agent.memory.push(state, action, next_state, reward)
 
-            # Move to the next state
             state = next_state
 
-            # Perform one step of the optimization (on the target network)
+            # On optimise le modèle
             agent.optimize_model()
             if p.game_over():
                 break
