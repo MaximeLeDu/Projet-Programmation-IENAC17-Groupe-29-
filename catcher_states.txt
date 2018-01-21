@@ -1,0 +1,5 @@
+player_x 0 51
+fruit_x 0 52
+97
+100
+None
