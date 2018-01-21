@@ -5,6 +5,7 @@ import agent as ag
 from ple.games import Catcher
 
 def genetique(générations,N,proba,game,STATES_CHOSEN):
+    """Cet algorithme utilise un paradigme génétique pour calculer, avec un jeu et des états donnés, des paramètres de Q-Learning renvoyant une solution efficace, ainsi que la qualité de la solution renvoyée"""
 
     p=PLE(game,force_fps = True,display_screen = False)
     Fonctions = []
@@ -72,6 +73,7 @@ def mutation(a,g,e,n,p):
         if a0>0 and a0<1 and g0>0 and g0<1 and  e0>0 and e0<1 and n0>0:
             return (a0,g0,e0,n0)
     return(a,g,e,n)
+#Les différentes solutions sont mutées pour ne pas rester bloqué sur un point d'équilibre
 
 
 def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
@@ -82,6 +84,7 @@ def croisement(alpha0,gamma0,eps0,norm0,alpha1,gamma1,eps1,norm1):
     if croi3>0 and croi4>0 and croi1>0 and croi1<1 and croi2>0 and croi2<0:
         return(alpha0,croi1,eps1,croi3,alpha1,croi2,eps0,croi4)
     return(alpha0,gamma0,eps1,norm1,alpha1,gamma1,eps0,norm0)
+#Les différentes solutions sont croisées pour obtenir une plus grande diversité de solutions
     
 def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
     #On fait un entraînement avec les paramètres, le poids est donné par la somme des récompenses sur une partie de taille fixée.
@@ -123,3 +126,4 @@ def calcul_poids(a,g,e,n,p,STATES_CHOSEN):
     return score
     
 print("Resultat :",genetique(7,7,0.6,Catcher(),["fruit_x","player_x"]))
+#Le résultat est affiché directement, sans stockage automatique
