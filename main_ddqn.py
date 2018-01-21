@@ -2,7 +2,7 @@ import os
 from ple import PLE
 import random
 import numpy as np
-import essai
+import ddqn
 from ple import PLE
 from ple.games import Pong
 
