@@ -15,20 +15,20 @@ def train(nb_parties,agent,p):
 
         while not p.game_over():
 
-            # get action for the current state and go one step in environment
+            #On récupère l'action, la récompense associée, et l'état suivant
             action = agent.get_action(state)
             reward= p.act(agent.actions[action])
             next_state = np.reshape(list(p.game.getGameState().values()), [1, agent.state_size])
 
-            # save the sample <s, a, r, s'> to the replay memory
+            # On sauvegarde l'échantillon dans la mémoire de l'agent
             agent.append_sample(state, action, reward, next_state)
-            # every time step do the training
+            # On entraîne l'agent à chaque étape
             agent.train_model()
             score += reward
             state = next_state
 
             if p.game_over():
-                # every episode update the target model to be same with model
+                # A chaque fin de partie, on entraîne le réseau ciblé
                 agent.update_target_model()
 
 def jeu(nb_frames,agent,p):
