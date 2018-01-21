@@ -20,7 +20,7 @@ class Agent():
         self.GAMMA = gamma
 		
         try:
-			#On essaye de lire les fichiers d'entraînements précédents
+	#On essaye de lire les fichiers d'entraînements précédents
             self.rewards = pickle.load(open(fichier_reward,"rb"))
             self.DISCRETIZATION = self.rewards.shape[0] -1
 
